@@ -22,9 +22,22 @@ function showAlert(message) {
   if(!alertExist) {
 
     const alert = document.createElement('P');
+    const strong = document.createElement('STRONG');
+    const span = document.createElement('SPAN');
+
     alert.classList.add('bg-red-100', 'border-red-400', 'text-red-700', 'px-4', 'py-3', 'rounded', 'max-w-lg', 'mx-auto', 'mt-6', 'text-center');
-    alert.textContent = message;
+    
+    strong.classList.add('font-bold');
+    strong.textContent = 'ERROR! ';
+
+    span.classList.add('block', 'sm:inline');
+    span.textContent = message;
+
+    alert.appendChild(strong);
+    alert.appendChild(span);
+
     form.appendChild(alert);
+    
     setTimeout(() => {
       alert.remove();
     },1500)
