@@ -2,9 +2,12 @@ import API_KEY from "../apiKey.js";
 
 const form = document.querySelector('#formulario');
 const result = document.querySelector('#resultado');
+const paginationDiv = document.querySelector('#paginacion');
 
 const resultsPerPage = 30;
 let totalPages;
+let iterator;
+let currentPage = 1;
 
 window.onload = () => {
   form.addEventListener('submit', validateForm);
@@ -20,7 +23,7 @@ function validateForm(e) {
     return
   }
 
-  searchImages(searchText);
+  searchImages();
 
 }
 
@@ -51,15 +54,16 @@ function showAlert(message) {
   }
 }
 
-function searchImages(textSearch) {
+function searchImages() {
+  const textSearch = document.querySelector('#termino').value;
+
   const key = API_KEY;
-  const url = `https://pixabay.com/api/?key=${key}&q=${textSearch}&per_page=${resultsPerPage}`;
+  const url = `https://pixabay.com/api/?key=${key}&q=${textSearch}&per_page=${resultsPerPage}&page=${currentPage}`;
   
   fetch(url)
     .then(response => response.json())
     .then(data => {
       totalPages = calculatePagination(data.totalHits);
-      console.log(totalPages);
       showImages(data.hits)
     })
 }
@@ -119,6 +123,7 @@ function showImages(origin) {
   
 
   });
+  showPagination();
 }
 
 function cleanHtml(element) {
@@ -129,4 +134,36 @@ function cleanHtml(element) {
 
 function calculatePagination(totalHits) {
   return parseInt(Math.ceil(totalHits / resultsPerPage));
+}
+
+// this is a generator to register the length or the number of elements in our pagination
+
+function *createPagination(total) {
+  for (let i = 1; i <= totalPages; i++) {
+    yield i;
+  }
+}
+
+function showPagination() {
+  cleanHtml(paginationDiv);
+  iterator = createPagination(totalPages);
+  while (true) {
+    const { value, done } = iterator.next();
+    // if done === true don't create more buttons in the pagination
+    if(done) return;
+
+    const button = document.createElement('A');
+    button.href = '#';
+    button.dataset.page = value;
+    button.textContent = value;
+    button.classList.add('siguiente', 'bg-yellow-400', 'px-4', 'py-1', 'mr-2', 'font-bold', 'mb-2', 'rounded');
+
+    button.onclick = () => {
+      currentPage = value;
+      searchImages();
+    }
+
+    paginationDiv.appendChild(button);
+  }
+  
 }
