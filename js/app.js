@@ -3,6 +3,9 @@ import API_KEY from "../apiKey.js";
 const form = document.querySelector('#formulario');
 const result = document.querySelector('#resultado');
 
+const resultsPerPage = 30;
+let totalPages;
+
 window.onload = () => {
   form.addEventListener('submit', validateForm);
 }
@@ -50,11 +53,15 @@ function showAlert(message) {
 
 function searchImages(textSearch) {
   const key = API_KEY;
-  const url = `https://pixabay.com/api/?key=${key}&q=${textSearch}&per_page=100`;
+  const url = `https://pixabay.com/api/?key=${key}&q=${textSearch}&per_page=${resultsPerPage}`;
   
   fetch(url)
     .then(response => response.json())
-    .then(data => showImages(data.hits))
+    .then(data => {
+      totalPages = calculatePagination(data.totalHits);
+      console.log(totalPages);
+      showImages(data.hits)
+    })
 }
 
 function showImages(origin) {
@@ -118,4 +125,8 @@ function cleanHtml(element) {
   while(element.firstChild) {
     element.firstChild.remove()
   }
+}
+
+function calculatePagination(totalHits) {
+  return parseInt(Math.ceil(totalHits / resultsPerPage));
 }
