@@ -54,18 +54,18 @@ function showAlert(message) {
   }
 }
 
-function searchImages() {
+async function searchImages() {
   const textSearch = document.querySelector('#termino').value;
 
   const key = API_KEY;
   const url = `https://pixabay.com/api/?key=${key}&q=${textSearch}&per_page=${resultsPerPage}&page=${currentPage}`;
   
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      totalPages = calculatePagination(data.totalHits);
-      showImages(data.hits)
-    })
+
+  const response = await fetch(url);
+  const data = await response.json();
+  totalPages = calculatePagination(data.totalHits);
+  showImages(data.hits)
+
 }
 
 function showImages(origin) {
